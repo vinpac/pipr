@@ -99,16 +99,16 @@ type PromptBuildCtx<Input, PreparedInput = unknown> = PromptConfig<Input> & {
     : Preparer<Input, PreparedInput>;
 };
 
-type GetHistoryItem<Input, PreparedInput = unknown> = (
+type GetHistory<Input, PreparedInput = unknown> = (
   config: PromptBuildCtx<Input, PreparedInput>
 ) => PromptHistoryItem[] | Promise<PromptHistoryItem[]>;
 
-type PromptAddHistoryItem<
+type PromptAddHistory<
   Input,
   PreparedInput = unknown,
   Return = Prompt<Input, PreparedInput>
 > = Prompt<Input, PreparedInput> & {
-  historyitem: (fn: GetHistoryItem<Input, PreparedInput>) => Return;
+  history: (fn: GetHistory<Input, PreparedInput>) => Return;
 };
 type PromptAddCorrector<
   Input,
@@ -125,9 +125,9 @@ type BuildPrompt<Input, PreparedInput = unknown> = Prompt<
   PromptAddCorrector<
     Input,
     PreparedInput,
-    PromptAddHistoryItem<Input, PreparedInput>
+    PromptAddHistory<Input, PreparedInput>
   > &
-  PromptAddHistoryItem<
+  PromptAddHistory<
     Input,
     PreparedInput,
     PromptAddCorrector<Input, PreparedInput>
@@ -144,7 +144,7 @@ function callOrReturn(fn: any, input: any) {
 
 type Options = AIConfig & {
   /**
-   * If true, the AI will generate new historyitem before generating the response.
+   * If true, the AI will generate new history before generating the response.
    */
   fresh?: boolean;
 };
@@ -266,8 +266,8 @@ export type Corrector<Input, PreparedInput = unknown> = (
 
 export function createPipr({ apiKey, events }: PiprConfig) {
   let schema: z.ZodSchema | undefined = undefined;
-  let getHistoryItem: GetHistoryItem<unknown, unknown> | undefined = undefined;
-  let historyitem: PromptHistoryItem[] | undefined;
+  let getHistory: GetHistory<unknown, unknown> | undefined = undefined;
+  let history: PromptHistoryItem[] | undefined;
   let preparer: Preparer<unknown, unknown> | undefined;
   let corrector: Corrector<unknown, unknown> | undefined;
   const ai = createOpenAIFetch(apiKey);
@@ -292,8 +292,8 @@ export function createPipr({ apiKey, events }: PiprConfig) {
               prepare: preparer as Preparer<unknown, unknown>,
             } as PromptBuildCtx<unknown, unknown>;
 
-            if (getHistoryItem && (!historyitem || options?.fresh)) {
-              historyitem = await getHistoryItem(buildCtx);
+            if (getHistory && (!history || options?.fresh)) {
+              history = await getHistory(buildCtx);
             }
 
             const input = preparer
@@ -302,8 +302,8 @@ export function createPipr({ apiKey, events }: PiprConfig) {
 
             const { user, system } = promptify(input);
 
-            const historyMessages = historyitem
-              ? historyitem
+            const historyMessages = history
+              ? history
                   .map(
                     history =>
                       [
@@ -365,8 +365,8 @@ export function createPipr({ apiKey, events }: PiprConfig) {
 
       const build: BuildPrompt<unknown> = {
         ...prompt,
-        historyitem(fn) {
-          getHistoryItem = fn;
+        history(fn) {
+          getHistory = fn;
           return build;
         },
         correct(fn) {
