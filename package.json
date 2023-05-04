@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -32,7 +32,10 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "pipr",
+  "publishConfig": {
+    "access": "public"
+  },
+  "name": "@pipr/core",
   "author": "Vinicius Pacheco",
   "module": "dist/pipr.esm.js",
   "size-limit": [

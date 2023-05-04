@@ -87,7 +87,7 @@ type ResolvedPromptCtx<Input> = {
   blocks: OutputWithBlocks['blocks'];
 } & PromptConfig<Input> & { input: Input };
 
-export type PromptHistory = { user: string; assistant: string };
+export type PromptHistoryItem = { user: string; assistant: string };
 
 type PromptBuildCtx<Input, PreparedInput = unknown> = PromptConfig<Input> & {
   promptify: (
@@ -101,7 +101,7 @@ type PromptBuildCtx<Input, PreparedInput = unknown> = PromptConfig<Input> & {
 
 type GetHistoryItem<Input, PreparedInput = unknown> = (
   config: PromptBuildCtx<Input, PreparedInput>
-) => PromptHistory[] | Promise<PromptHistory[]>;
+) => PromptHistoryItem[] | Promise<PromptHistoryItem[]>;
 
 type PromptAddHistoryItem<
   Input,
@@ -267,7 +267,7 @@ export type Corrector<Input, PreparedInput = unknown> = (
 export function createPipr({ apiKey, events }: PiprConfig) {
   let schema: z.ZodSchema | undefined = undefined;
   let getHistoryItem: GetHistoryItem<unknown, unknown> | undefined = undefined;
-  let historyitem: PromptHistory[] | undefined;
+  let historyitem: PromptHistoryItem[] | undefined;
   let preparer: Preparer<unknown, unknown> | undefined;
   let corrector: Corrector<unknown, unknown> | undefined;
   const ai = createOpenAIFetch(apiKey);

@@ -7,11 +7,11 @@ PIPR is a library that helps you generate conversational AI prompts with ease. P
 Install `pipr` using npm or yarn:
 
 ```bash
-npm install pipr
+npm install @pipr/core
 ```
 
 ```bash
-yarn add pipr
+yarn add @pipr/core
 ```
 
 ## Usage
